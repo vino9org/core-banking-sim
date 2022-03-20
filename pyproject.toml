@@ -1,0 +1,53 @@
+[tool.poetry]
+name = "core-banking-sim"
+version = "0.1.0"
+description = "Cookiecutter template for generic Python 3 project with tooling configuration for testing, linting and IDE support"
+authors = ["Li Lin <guru.lin@gmail.com>"]
+license = "MIT"
+
+# this section contains all dependencies required to run unit and integration tests
+# not just dependencies requied for lambda runtime
+[tool.poetry.dependencies]
+python = "^3.9"
+pytest = "^6.2.5"
+pytest-mock = "^3.5.1"
+pytest-cov = "^3.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.dev-dependencies]
+# formatting, linting
+black = "^22.1.0"
+flake8 = "^4.0.1"
+flake8-black = "^0.2.3"
+flake8-builtins = "^1.5.3"
+flake8-comprehensions = "^3.7.0"
+flake8-debugger = "^4.0.0"
+flake8-fixme = "^1.1.1"
+flake8-isort = "^4.1.1"
+flake8-variables-names = "^0.0.4"
+isort = "^5.10.1"
+pre-commit = "^2.17.0"
+mypy = "^0.931"
+types-setuptools = "^57.4.8"
+types-toml = "^0.10.3"
+
+[tool.isort]
+profile = "black"
+line_length = 120
+src_paths = ["."]
+
+[tool.black]
+line-length = 120
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = [
+    "tests",
+]
+
+[tool.coverage.run]
+source = ["."]
+omit = ["tests/*"]
