@@ -25,3 +25,6 @@ pytest_junit.xml
 # CDK asset staging directory
 .cdk.staging
 cdk.out
+
+# test data
+seed.csv

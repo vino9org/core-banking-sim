@@ -2,7 +2,7 @@ import csv
 from datetime import datetime
 from decimal import Decimal
 from threading import Lock
-from typing import Dict, Union
+from typing import Dict, Optional
 
 import ulid
 
@@ -28,15 +28,13 @@ def init_from_csv(csv_file: str) -> None:
             )
 
 
-def get_account(account_id: str) -> Union[None, CheckingAccount]:
+def get_account(account_id: str) -> Optional[CheckingAccount]:
     global _ledger_
-    try:
-        return _ledger_[account_id]
-    except KeyError:
-        return None
+
+    return _ledger_[account_id] if account_id in _ledger_ else None
 
 
-def transfer(debit_acc: CheckingAccount, credit_acc: CheckingAccount, amount: Decimal) -> Union[None, str]:
+def transfer(debit_acc: CheckingAccount, credit_acc: CheckingAccount, amount: Decimal) -> Optional[str]:
     global _ledger_
     if amount <= 0:
         return None
@@ -58,3 +56,5 @@ def transfer(debit_acc: CheckingAccount, credit_acc: CheckingAccount, amount: De
             return trx_id
     finally:
         mutex.release()
+
+    return None

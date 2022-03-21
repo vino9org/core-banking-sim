@@ -1,17 +1,29 @@
-from typing import Union
+import os.path
+from typing import Optional, cast
 
 from . import eventing, ledger, models
 
+SEED_DATA_FILE = "seed.csv"
 
-def local_transfer(request: models.FundTransferRequest) -> Union[None, models.FundTransfer]:
+
+def load_seed_data() -> None:
+    if os.path.isfile(SEED_DATA_FILE):
+        print("...looading seed data...")
+        ledger.init_from_csv(SEED_DATA_FILE)
+
+
+load_seed_data()
+
+
+def local_transfer(request: models.FundTransferRequest) -> Optional[models.FundTransfer]:
     if request.amount <= 0:
         return None
 
-    debit_acc = ledger.get_account(request.account_id)
+    debit_acc = cast(models.CheckingAccount, ledger.get_account(request.account_id))
     if debit_acc is not None and debit_acc.customer_id != request.customer_id:
         return None
 
-    credit_acc = ledger.get_account(request.credit_account_id)
+    credit_acc = cast(models.CheckingAccount, ledger.get_account(request.credit_account_id))
     if credit_acc is None:
         return None
 

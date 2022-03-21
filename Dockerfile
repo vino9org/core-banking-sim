@@ -9,8 +9,7 @@ RUN apt-get -qq update \
 COPY requirements.txt .
 RUN pip install --root="/install" -r requirements.txt
 
-COPY *.py /
+COPY main.py core_banking/ seed.csv /
 
 EXPOSE 8000
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-
