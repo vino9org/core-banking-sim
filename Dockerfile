@@ -12,5 +12,5 @@ RUN pip install --root="/install" -r requirements.txt
 COPY *.py /
 
 EXPOSE 8000
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "core_banking_sim:app", "--host", "0.0.0.0", "--port", "8000"]
 
