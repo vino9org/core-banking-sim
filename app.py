@@ -13,6 +13,7 @@ class FundTransferRequest(BaseModel):
     currency: str
     transaction_date: str
     memo: str
+    limits_req_id: str
 
 
 app = FastAPI()
