@@ -5,6 +5,7 @@ __pycache__
 .venv
 *.egg-info
 .env*
+tmp/
 
 # test reports
 test-report/

@@ -1,0 +1,8 @@
+.git/
+.idea/
+.vscode/
+.venv/
+*.iml
+k8s/
+Makefile
+README.md
