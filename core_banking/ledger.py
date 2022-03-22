@@ -28,13 +28,12 @@ def init_from_csv(csv_file: str) -> None:
             )
 
 
-def get_account(account_id: str) -> Optional[CheckingAccount]:
+async def get_account(account_id: str) -> Optional[CheckingAccount]:
     global _ledger_
-
     return _ledger_[account_id] if account_id in _ledger_ else None
 
 
-def transfer(debit_acc: CheckingAccount, credit_acc: CheckingAccount, amount: Decimal) -> Optional[str]:
+async def transfer(debit_acc: CheckingAccount, credit_acc: CheckingAccount, amount: Decimal) -> Optional[str]:
     global _ledger_
     if amount <= 0:
         return None

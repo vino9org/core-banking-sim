@@ -2,7 +2,6 @@ import uuid
 from decimal import Decimal
 
 import pytest
-from botocore.stub import Stubber
 from fastapi.testclient import TestClient
 
 import main
@@ -25,26 +24,26 @@ def test_probes() -> None:
     assert client.get("/ready").status_code == 200
 
 
-def test_ledger(seed_csv_file) -> None:
+async def test_ledger(seed_csv_file) -> None:
     ledger.init_from_csv(seed_csv_file)
 
-    acc1 = ledger.get_account("A11")
+    acc1 = await ledger.get_account("A11")
     assert acc1 is not None
     assert acc1.avail_balance == Decimal("1000.12")
 
-    acc2 = ledger.get_account("A22")
+    acc2 = await ledger.get_account("A22")
     assert acc2 is not None
     assert acc2.avail_balance == Decimal(2000)
 
-    assert ledger.get_account("AXX") is None
+    assert await ledger.get_account("AXX") is None
 
-    trx_id = ledger.transfer(acc1, acc2, Decimal("123.45"))
+    trx_id = await ledger.transfer(acc1, acc2, Decimal("123.45"))
     assert trx_id
 
     assert acc2.avail_balance == Decimal("2123.45")
 
 
-def test_corebanking_api(seed_csv_file) -> None:
+async def test_corebanking_api(seed_csv_file) -> None:
     ledger.init_from_csv(seed_csv_file)
 
     request = models.FundTransferRequest(
@@ -58,14 +57,8 @@ def test_corebanking_api(seed_csv_file) -> None:
         limits_req_id="AAAA",
     )
 
-    stubber = Stubber(eventing.client)
-    stubber.add_response("put_events", {})
-    stubber.activate
-
-    with stubber:
-        transfer = local_transfer(request)
-
-    stubber.assert_no_pending_responses()
+    transfer = await local_transfer(request)
 
     assert transfer
     assert transfer.new_balance == Decimal("900.14")
+    assert eventing._queue_.qsize() == 1
