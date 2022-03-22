@@ -16,15 +16,15 @@ mutex = Lock()
 def init_from_csv(csv_file: str) -> None:
     global _ledger_
     with open(csv_file) as f:
-        for row in csv.reader(f):
-            acc_id = row[1]
+        for row in csv.DictReader(f):
+            acc_id = row["acc_id"]
             _ledger_[acc_id] = CheckingAccount(
-                customer_id=row[0],
-                account_id=acc_id,
-                currency=row[2],
-                avail_balance=row[3],
-                balance=row[3],
-                status=row[4],
+                customer_id=row["cust_id"],
+                account_id=row["acc_id"],
+                currency=row["currency"],
+                avail_balance=row["balance"],
+                balance=row["balance"],
+                status=row["status"],
             )
 
 

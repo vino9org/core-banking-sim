@@ -13,8 +13,9 @@ def seed_csv_file(tmpdir):
     tmp_csv = tmpdir.join(f"test_{uuid.uuid1().hex}.csv")
     print(f"tmp_file={tmp_csv}\n")
     with open(tmp_csv, "w") as f:
-        f.write("C11,A11,SGD,1000.12,active,\n")
-        f.write("C22,A22,SGD,2000.00,active,\n")
+        f.write("cust_id,acc_id,currency,balance,status,limit\n")
+        f.write("C11,A11,SGD,1000.12,active,2000.00,\n")
+        f.write("C22,A22,SGD,2000.00,active,2000.00,\n")
     yield tmp_csv
 
 
