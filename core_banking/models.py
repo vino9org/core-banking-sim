@@ -20,6 +20,7 @@ class FundTransfer(BaseModel):
     debit_customer_id: str
     debit_account_id: str
     currency: str
+    credit_customer_id: str
     credit_account_id: str
     transfer_amount: Decimal
     memo: str
