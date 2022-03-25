@@ -16,6 +16,8 @@ while getopts "v:p" arg; do
 done
 
 
+docker rmi -t sloppycoder/vinobank-corebanking-sim:$VERSION
+
 CMD="docker buildx build --platform linux/amd64 -t sloppycoder/vinobank-corebanking-sim:$VERSION $PUSH_FLAG ."
 echo $CMD
 $CMD
