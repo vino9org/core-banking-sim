@@ -22,8 +22,8 @@ def init_from_csv(csv_file: str) -> None:
                 customer_id=row["cust_id"],
                 account_id=row["acc_id"],
                 currency=row["currency"],
-                avail_balance=row["balance"],
-                balance=row["balance"],
+                avail_balance=Decimal(row["balance"]),
+                balance=Decimal(row["balance"]),
                 status=row["status"],
             )
 

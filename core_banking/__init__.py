@@ -31,7 +31,7 @@ async def local_transfer(request: models.FundTransferRequest) -> Optional[models
     trx_id = await ledger.transfer(debit_acc, credit_acc, request.amount)
 
     transfer = models.FundTransfer(
-        transaction_id=trx_id,
+        transaction_id=cast(str, trx_id),
         customer_id=request.customer_id,
         account_id=request.account_id,
         credit_account_id=request.credit_account_id,

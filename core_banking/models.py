@@ -35,6 +35,7 @@ class FundTransfer(BaseModel):
 class CheckingAccount(BaseModel):
     customer_id: str
     account_id: str
+    currency: str
     balance: Decimal
     avail_balance: Decimal
     status: str
