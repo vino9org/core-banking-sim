@@ -5,8 +5,8 @@ from pydantic import BaseModel
 
 
 class FundTransferRequest(BaseModel):
-    customer_id: str
-    account_id: str
+    debit_customer_id: str
+    debit_account_id: str
     credit_account_id: str
     amount: Decimal
     currency: str
@@ -17,17 +17,21 @@ class FundTransferRequest(BaseModel):
 
 class FundTransfer(BaseModel):
     transaction_id: str
-    customer_id: str
-    account_id: str
+    debit_customer_id: str
+    debit_account_id: str
     currency: str
     credit_account_id: str
     transfer_amount: Decimal
     memo: str
     transaction_date: str
-    prev_balance: Decimal
-    prev_avail_balance: Decimal
-    new_balance: Decimal
-    new_avail_balance: Decimal
+    debit_prev_balance: Decimal
+    debit_prev_avail_balance: Decimal
+    debit_balance: Decimal
+    debit_avail_balance: Decimal
+    credit_prev_balance: Decimal
+    credit_prev_avail_balance: Decimal
+    credit_balance: Decimal
+    credit_avail_balance: Decimal
     status: str
     limits_req_id: str
 

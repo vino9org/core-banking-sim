@@ -48,8 +48,8 @@ async def test_corebanking_api(seed_csv_file) -> None:
     ledger.init_from_csv(seed_csv_file)
 
     request = models.FundTransferRequest(
-        customer_id="C11",
-        account_id="A11",
+        debit_customer_id="C11",
+        debit_account_id="A11",
         credit_account_id="A22",
         amount=Decimal("99.98"),
         currency="SGD",
@@ -61,5 +61,8 @@ async def test_corebanking_api(seed_csv_file) -> None:
     transfer = await local_transfer(request)
 
     assert transfer
-    assert transfer.new_balance == Decimal("900.14")
+    assert transfer.debit_prev_balance == Decimal("1000.12")
+    assert transfer.debit_balance == Decimal("900.14")
+    assert transfer.credit_prev_balance == Decimal("2000.00")
+    assert transfer.credit_balance == Decimal("2099.98")
     assert eventing._queue_.qsize() == 1
