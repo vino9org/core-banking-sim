@@ -2,13 +2,13 @@ import csv
 from datetime import datetime
 from decimal import Decimal
 from threading import Lock
-from typing import Dict, Optional
+from typing import Optional
 
 import ulid
 
 from .models import CheckingAccount
 
-_ledger_: Dict[str, CheckingAccount] = {}
+_ledger_: dict[str, CheckingAccount] = {}
 
 mutex = Lock()
 
