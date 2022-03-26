@@ -5,7 +5,9 @@ import pytest
 from fastapi.testclient import TestClient
 
 import main
-from core_banking import eventing, ledger, local_transfer, models
+from core_banking import eventing, ledger, models
+
+client = TestClient(main.app)
 
 
 @pytest.fixture
@@ -20,7 +22,6 @@ def seed_csv_file(tmpdir):
 
 
 def test_probes() -> None:
-    client = TestClient(main.app)
     assert client.get("/healthz").status_code == 200
     assert client.get("/ready").status_code == 200
 
@@ -44,7 +45,7 @@ async def test_ledger(seed_csv_file) -> None:
     assert acc2.avail_balance == Decimal("2123.45")
 
 
-async def test_corebanking_api(seed_csv_file) -> None:
+async def test_local_transfer_api(seed_csv_file) -> None:
     ledger.init_from_csv(seed_csv_file)
 
     request = models.FundTransferRequest(
@@ -58,11 +59,39 @@ async def test_corebanking_api(seed_csv_file) -> None:
         limits_req_id="AAAA",
     )
 
-    transfer = await local_transfer(request)
+    prev_q_size = eventing._queue_.qsize()
 
-    assert transfer
+    response = client.post(
+        "/core-banking/local-transfers", headers={"Content-Type": "application/json"}, data=request.json()
+    )
+    assert response.status_code == 200
+
+    transfer = models.FundTransfer.parse_obj(response.json())
     assert transfer.debit_prev_balance == Decimal("1000.12")
     assert transfer.debit_balance == Decimal("900.14")
     assert transfer.credit_prev_balance == Decimal("2000.00")
     assert transfer.credit_balance == Decimal("2099.98")
-    assert eventing._queue_.qsize() == 1
+    assert eventing._queue_.qsize() == prev_q_size + 1
+
+
+async def test_invalid_local_transfer(seed_csv_file) -> None:
+    ledger.init_from_csv(seed_csv_file)
+
+    request = models.FundTransferRequest(
+        debit_customer_id="INVALID",
+        debit_account_id="DOES NOT EXIST",
+        credit_account_id="A22",
+        amount=Decimal("-99.98"),
+        currency="SGD",
+        transaction_date="2022-03-21",
+        memo="test transfer from pytest",
+        limits_req_id="AAAA",
+    )
+
+    prev_q_size = eventing._queue_.qsize()
+
+    response = client.post(
+        "/core-banking/local-transfers", headers={"Content-Type": "application/json"}, data=request.json()
+    )
+    assert response.status_code == 400
+    assert eventing._queue_.qsize() == prev_q_size
