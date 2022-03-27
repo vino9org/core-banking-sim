@@ -11,8 +11,9 @@ logger = logging.getLogger(__name__)
 
 def load_seed_data() -> None:
     if os.path.isfile(SEED_DATA_FILE):
-        logger.info("...looading seed data...")
         ledger.init_from_csv(SEED_DATA_FILE)
+        msg = f"loaded {len(ledger._ledger_.keys())} accounts from {SEED_DATA_FILE}"
+        logger.info(msg)
 
 
 load_seed_data()

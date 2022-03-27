@@ -5,13 +5,14 @@ import uvicorn
 from fastapi import FastAPI, Response
 from fastapi_utils.tasks import repeat_every
 
-from core_banking import eventing, local_transfer, models
-
 LOG_FORMAT = "%(asctime)s %(levelname)s: %(message)s"
 LOG_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
-logging.basicConfig(level=logging.DEBUG, format=LOG_FORMAT, datefmt=LOG_DATE_FORMAT)
+logging.basicConfig(level=logging.INFO, format=LOG_FORMAT, datefmt=LOG_DATE_FORMAT)
 
 logger = logging.getLogger(__name__)
+
+# import after init logger in order to print log entries in the initialization code
+from core_banking import eventing, local_transfer, models  # noqa
 
 app = FastAPI()
 
@@ -42,7 +43,7 @@ async def flush_event_queue():
 
 @app.on_event("shutdown")
 async def flush_event_queue_at_shutdown():
-    logger.info("...shutting down...")
+    logger.info("flusing events before shutting down")
     await eventing.send_events(2000)
     await eventing.send_events(2000)
 
