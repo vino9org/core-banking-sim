@@ -7,9 +7,10 @@ RUN apt-get -qq update \
         libffi-dev
 
 COPY requirements.txt .
-RUN pip install --root="/install" -r requirements.txt
+RUN pip install -r requirements.txt
 
-COPY main.py core_banking/ seed.csv /
+COPY main.py seed.csv /
+COPY core_banking/ /core_banking
 
 EXPOSE 8000
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
