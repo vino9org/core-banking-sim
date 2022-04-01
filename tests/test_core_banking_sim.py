@@ -95,3 +95,9 @@ async def test_invalid_local_transfer(seed_csv_file) -> None:
     )
     assert response.status_code == 400
     assert eventing._queue_.qsize() == prev_q_size
+
+
+async def test_get_all_accounts() -> None:
+    response = client.get("/core-banking/accounts")
+    assert response.status_code == 200
+    assert len(response.json()) > 1

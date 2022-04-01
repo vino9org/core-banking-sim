@@ -19,6 +19,10 @@ def load_seed_data() -> None:
 load_seed_data()
 
 
+def get_all_accounts() -> list[models.CheckingAccount]:
+    return list(ledger._ledger_.values())
+
+
 async def local_transfer(request: models.FundTransferRequest) -> Optional[models.FundTransfer]:
     if request.amount <= 0:
         logger.info("invalid local_transfer request: amount <= 0")

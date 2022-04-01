@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.INFO, format=LOG_FORMAT, datefmt=LOG_DATE_FORM
 logger = logging.getLogger(__name__)
 
 # import after init logger in order to print log entries in the initialization code
-from core_banking import eventing, local_transfer, models  # noqa
+from core_banking import eventing, get_all_accounts, local_transfer, models  # noqa
 
 app = FastAPI()
 
@@ -25,6 +25,11 @@ async def health():
 @app.get("/ready")
 async def ready():
     return "ready"
+
+
+@app.get("/core-banking/accounts")
+def all_accounts() -> list[models.CheckingAccount]:
+    return get_all_accounts()
 
 
 @app.post("/core-banking/local-transfers", response_model=models.FundTransfer)
