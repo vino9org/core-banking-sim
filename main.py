@@ -1,9 +1,17 @@
 import logging
+import os
 from typing import Optional
 
+import opentelemetry.trace
 import uvicorn
 from fastapi import FastAPI, Response
 from fastapi_utils.tasks import repeat_every
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from opentelemetry.sdk.extension.aws.trace import AwsXRayIdGenerator
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 LOG_FORMAT = "%(asctime)s %(levelname)s: %(message)s"
 LOG_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
@@ -14,7 +22,31 @@ logger = logging.getLogger(__name__)
 # import after init logger in order to print log entries in the initialization code
 from core_banking import eventing, get_all_accounts, local_transfer, models  # noqa
 
+
+# initiailize tracing
+def init_tracing() -> bool:
+    if os.environ.get("NO_TRACING"):
+        False
+
+    svc_name = os.environ.get("SVC_NAME", "corebanking-sim")
+    otlp_endpoint = f"http://{os.environ.get('OLTP_COLLECTOR_IP', '127.0.0.1')}:4317"
+    logger.info(f"resource {svc_name} traces will be sent to {otlp_endpoint}")
+
+    provider = TracerProvider(
+        id_generator=AwsXRayIdGenerator(), resource=Resource(attributes={"service.name": svc_name})
+    )
+    exporter = OTLPSpanExporter(endpoint=otlp_endpoint, insecure=True)
+    span_processor = BatchSpanProcessor(exporter)
+    provider.add_span_processor(span_processor)
+    opentelemetry.trace.set_tracer_provider(provider)
+
+    return True
+
+
 app = FastAPI()
+
+if init_tracing():
+    FastAPIInstrumentor.instrument_app(app, excluded_urls="ready,healthz")
 
 
 @app.get("/healthz")
@@ -34,7 +66,7 @@ def all_accounts() -> list[models.CheckingAccount]:
 
 @app.post("/core-banking/local-transfers", response_model=models.FundTransfer)
 async def new_local_transfer(request: models.FundTransferRequest, response: Response) -> Optional[models.FundTransfer]:
-    logger.info("processing request: ", request)
+    logger.info("processing request: %s", request)
     transfer = await local_transfer(request)
     response.status_code = 200 if transfer else 400
     return transfer
