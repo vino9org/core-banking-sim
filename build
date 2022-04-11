@@ -2,7 +2,7 @@
 
 # default settings
 PUSH_FLAG=""
-VERSION="0.1.1"
+VERSION="0.1.2"
 
 while getopts "v:p" arg; do
   case $arg in
@@ -18,6 +18,6 @@ done
 
 docker rmi -t sloppycoder/vinobank-corebanking-sim:$VERSION
 
-CMD="docker buildx build --platform linux/amd64 -t sloppycoder/vinobank-corebanking-sim:$VERSION $PUSH_FLAG ."
+CMD="docker buildx build --platform linux/amd64 -t public.ecr.aws/vino9/vinobank-corebanking-sim:$VERSION $PUSH_FLAG ."
 echo $CMD
 $CMD
