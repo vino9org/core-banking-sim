@@ -26,8 +26,9 @@ from core_banking import eventing, get_all_accounts, local_transfer, models  # n
 # initiailize tracing
 def init_tracing() -> bool:
     if os.environ.get("NO_TRACING"):
-        False
+        return False
 
+    print("...initializing tracing...")
     svc_name = os.environ.get("SVC_NAME", "corebanking-sim")
     otlp_endpoint = f"http://{os.environ.get('OLTP_COLLECTOR_IP', '127.0.0.1')}:4317"
     logger.info(f"resource {svc_name} traces will be sent to {otlp_endpoint}")
