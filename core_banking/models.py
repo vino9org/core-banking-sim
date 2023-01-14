@@ -1,10 +1,13 @@
 from datetime import datetime
 from decimal import Decimal
+from enum import Enum, IntEnum
 
 from pydantic import BaseModel
+from redis_om import HashModel
 
 
 class FundTransferRequest(BaseModel):
+    req_id: str
     debit_customer_id: str
     debit_account_id: str
     credit_account_id: str
@@ -41,11 +44,27 @@ class FundTransfer(BaseModel):
     limits_req_id: str
 
 
-class CheckingAccount(BaseModel):
+class AccountCurrency(Enum):
+    USD = "USD"
+    SGD = "SGD"
+    THB = "THB"
+    PHP = "PHP"
+    VND = "VND"
+    MYR = "MYR"
+    IDR = "IDR"
+    INR = "INR"
+
+
+class AccountStatus(IntEnum):
+    active = 1
+    inactive = 0
+
+
+class CheckingAccount(HashModel):
     customer_id: str
     account_id: str
-    currency: str
+    currency: AccountCurrency
     balance: Decimal
     avail_balance: Decimal
-    status: str
+    status: AccountStatus
     updated_at: datetime = datetime.now()

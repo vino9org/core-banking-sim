@@ -1,59 +1,63 @@
 import csv
-from datetime import datetime
 from decimal import Decimal
-from threading import Lock
-from typing import Optional
+from typing import Optional, Tuple
 
-import ulid
+from redis_om import get_redis_connection
+from retrying import retry
 
-from .models import CheckingAccount
-
-_ledger_: dict[str, CheckingAccount] = {}
-
-mutex = Lock()
+from .models import AccountCurrency, AccountStatus, CheckingAccount
 
 
 def init_from_csv(csv_file: str) -> None:
-    global _ledger_
     with open(csv_file) as f:
         for row in csv.DictReader(f):
-            acc_id = row["acc_id"]
-            _ledger_[acc_id] = CheckingAccount(
-                customer_id=row["cust_id"],
-                account_id=row["acc_id"],
-                currency=row["currency"],
-                avail_balance=Decimal(row["balance"]),
-                balance=Decimal(row["balance"]),
-                status=row["status"],
-            )
+            dict_to_account(row).save()
 
 
-async def get_account(account_id: str) -> Optional[CheckingAccount]:
-    global _ledger_
-    return _ledger_[account_id] if account_id in _ledger_ else None
+def dict_to_account(row: dict) -> CheckingAccount:
+    return CheckingAccount(
+        pk=row["account_id"],
+        customer_id=row["customer_id"],
+        account_id=row["account_id"],
+        currency=AccountCurrency(row["currency"]),
+        avail_balance=Decimal(row["avail_balance"]),
+        balance=Decimal(row["balance"]),
+        status=AccountStatus(int(row["status"])),
+    )
 
 
-async def transfer(debit_acc: CheckingAccount, credit_acc: CheckingAccount, amount: Decimal) -> Optional[str]:
-    global _ledger_
-    if amount <= 0:
-        return None
+def get_account(account_id: str) -> Optional[CheckingAccount]:
+    return CheckingAccount.get(account_id)
 
-    mutex.acquire()
-    try:
-        if debit_acc.avail_balance >= amount:
-            trx_id = str(ulid.new())
-            now = datetime.now()
 
-            debit_acc.balance -= amount
-            debit_acc.avail_balance = debit_acc.balance
-            debit_acc.updated_at = now
+@retry(stop_max_attempt_number=3, wait_random_min=200, wait_random_max=500)
+async def transfer(
+    debit_acc_in: CheckingAccount, credit_acc_in: CheckingAccount, amount: Decimal
+) -> Tuple[CheckingAccount, CheckingAccount, Decimal, Decimal]:
+    redis = get_redis_connection()
+    redis.watch(debit_acc_in.pk, credit_acc_in.pk)
 
-            credit_acc.balance += amount
-            credit_acc.avail_balance = credit_acc.balance
-            credit_acc.updated_at = now
+    debit_acc = CheckingAccount.get(debit_acc_in.pk)
+    if debit_acc.avail_balance < amount:
+        raise ValueError("insufficient funds")
 
-            return trx_id
-    finally:
-        mutex.release()
+    credit_acc = CheckingAccount.get(credit_acc_in.pk)
 
-    return None
+    debit_prev_bal = debit_acc.balance
+    credit_prev_bal = credit_acc.balance
+
+    debit_bal = debit_prev_bal - amount
+    credit_bal = credit_prev_bal + amount
+
+    debit_acc.balance = debit_bal
+    debit_acc.avail_balance = debit_bal
+    credit_acc.balance = credit_bal
+    credit_acc.avail_balance = credit_bal
+
+    with redis.pipeline() as pipe:
+        pipe.multi()
+        debit_acc.save(pipe)
+        credit_acc.save(pipe)
+        pipe.execute()
+
+    return debit_acc, credit_acc, debit_prev_bal, credit_prev_bal

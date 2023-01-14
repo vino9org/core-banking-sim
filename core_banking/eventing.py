@@ -5,8 +5,6 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Any
 
-import boto3
-
 from .models import FundTransfer
 
 logger = logging.getLogger(__name__)
@@ -21,7 +19,6 @@ class JSONEncoder(json.JSONEncoder):
 
 
 _queue_: asyncio.Queue = asyncio.Queue(maxsize=10000)
-client = boto3.client("events")
 
 
 def fund_transfer_event(transfer: FundTransfer) -> dict[Any, Any]:
@@ -49,5 +46,5 @@ async def send_events(count: int):
     events = await dequeue_events(count)
     if events:
         logger.info(f"...send {len(events)} events to EventBridge...")
-        response = client.put_events(Entries=events)
-        logger.info("put_events: ", response)
+        # response = client.put_events(Entries=events)
+        # logger.info("put_events: ", response)

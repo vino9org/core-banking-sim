@@ -3,6 +3,7 @@ from decimal import Decimal
 
 import pytest
 from fastapi.testclient import TestClient
+from redis_om.model.model import NotFoundError
 
 import main
 from core_banking import eventing, ledger, models
@@ -15,9 +16,9 @@ def seed_csv_file(tmpdir):
     tmp_csv = tmpdir.join(f"test_{uuid.uuid1().hex}.csv")
     print(f"tmp_file={tmp_csv}\n")
     with open(tmp_csv, "w") as f:
-        f.write("cust_id,acc_id,currency,balance,status,limit\n")
-        f.write("C11,A11,SGD,1000.12,active,2000.00,\n")
-        f.write("C22,A22,SGD,2000.00,active,2000.00,\n")
+        f.write("customer_id,account_id,currency,avail_balance,balance,status,limit\n")
+        f.write("C11,A11,SGD,1000.12,1000.12,1,2000.00,\n")
+        f.write("C22,A22,SGD,2000.00,2000.00,1,2000.00,\n")
     yield tmp_csv
 
 
@@ -29,26 +30,27 @@ def test_probes() -> None:
 async def test_ledger(seed_csv_file) -> None:
     ledger.init_from_csv(seed_csv_file)
 
-    acc1 = await ledger.get_account("A11")
+    acc1 = ledger.get_account("A11")
     assert acc1 is not None
     assert acc1.avail_balance == Decimal("1000.12")
 
-    acc2 = await ledger.get_account("A22")
+    acc2 = ledger.get_account("A22")
     assert acc2 is not None
     assert acc2.avail_balance == Decimal(2000)
 
-    assert await ledger.get_account("AXX") is None
+    with pytest.raises(NotFoundError):
+        ledger.get_account("AXX")
 
-    trx_id = await ledger.transfer(acc1, acc2, Decimal("123.45"))
-    assert trx_id
+    _, acc2_out, _, _ = await ledger.transfer(acc1, acc2, Decimal("123.45"))
 
-    assert acc2.avail_balance == Decimal("2123.45")
+    assert acc2_out.avail_balance == Decimal("2123.45")
 
 
 async def test_local_transfer_api(seed_csv_file) -> None:
     ledger.init_from_csv(seed_csv_file)
 
     request = models.FundTransferRequest(
+        req_id="uniq_id",
         debit_customer_id="C11",
         debit_account_id="A11",
         credit_account_id="A22",
@@ -71,6 +73,7 @@ async def test_local_transfer_api(seed_csv_file) -> None:
     assert transfer.debit_balance == Decimal("900.14")
     assert transfer.credit_prev_balance == Decimal("2000.00")
     assert transfer.credit_balance == Decimal("2099.98")
+
     assert eventing._queue_.qsize() == prev_q_size + 1
 
 
@@ -78,6 +81,7 @@ async def test_invalid_local_transfer(seed_csv_file) -> None:
     ledger.init_from_csv(seed_csv_file)
 
     request = models.FundTransferRequest(
+        req_id="uniq_id_blah",
         debit_customer_id="INVALID",
         debit_account_id="DOES NOT EXIST",
         credit_account_id="A22",
@@ -97,7 +101,12 @@ async def test_invalid_local_transfer(seed_csv_file) -> None:
     assert eventing._queue_.qsize() == prev_q_size
 
 
-async def test_get_all_accounts() -> None:
-    response = client.get("/core-banking/accounts")
+async def test_get_account_by_id() -> None:
+    response = client.get("/core-banking/accounts/A22")
     assert response.status_code == 200
     assert len(response.json()) > 1
+
+
+async def test_get_account_by_invalid_id() -> None:
+    response = client.get("/core-banking/accounts/AXX")
+    assert response.status_code == 404
