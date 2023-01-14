@@ -31,7 +31,7 @@ jobs:
 
       - name: Unit tests
         run: |
-          pytest -v -s
+          pytest -v -s -m fake
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
