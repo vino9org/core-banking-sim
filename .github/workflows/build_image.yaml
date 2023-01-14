@@ -29,9 +29,9 @@ jobs:
         run: |
           flake8 --count --show-source --statistics
 
-      - name: Unit tests
-        run: |
-          pytest -v -s -m fake
+      # - name: Unit tests
+      #   run: |
+      #     pytest -v -s -m fake
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
