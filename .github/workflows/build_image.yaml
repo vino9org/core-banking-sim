@@ -29,9 +29,14 @@ jobs:
         run: |
           flake8 --count --show-source --statistics
 
-      # - name: Unit tests
-      #   run: |
-      #     pytest -v -s -m fake
+      - name: start Redis
+        uses: shogo82148/actions-setup-redis@v1
+        with:
+          redis-version: '6.x'
+
+      - name: Unit tests
+        run: |
+          pytest -v -s
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
