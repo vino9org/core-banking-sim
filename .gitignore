@@ -28,3 +28,6 @@ cdk.out
 
 # test data
 seed.csv
+
+# newrelic
+newrelic.ini
