@@ -6,7 +6,6 @@ import uvicorn
 from fastapi import FastAPI, Response, UploadFile
 from fastapi.responses import JSONResponse
 from fastapi_utils.tasks import repeat_every
-from redis_om.model.model import NotFoundError
 
 LOG_FORMAT = "%(asctime)s %(levelname)s: %(message)s"
 LOG_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%z"

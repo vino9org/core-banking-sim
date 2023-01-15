@@ -15,7 +15,6 @@ spec:
       containers:
       - name: core-banking-sim
         image: ghcr.io/vino9org/core-banking-sim:0.1.2
-        imagePullPolicy: Always
         ports:
         - containerPort: 8000
         env:

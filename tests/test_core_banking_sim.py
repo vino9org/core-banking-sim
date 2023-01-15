@@ -3,7 +3,6 @@ from io import StringIO
 
 import pytest
 from fastapi.testclient import TestClient
-from redis_om.model.model import NotFoundError
 
 import main
 from core_banking import eventing, ledger, models
