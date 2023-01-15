@@ -32,9 +32,10 @@ async def ready():
 
 @app.get("/core-banking/accounts/{account_id}", response_model=models.CheckingAccount)
 async def account_detail(account_id: str):
-    try:
-        return await ledger.get_account(account_id)
-    except NotFoundError:
+    account = await ledger.get_account(account_id)
+    if account is not None:
+        return account
+    else:
         return JSONResponse(status_code=404, content={"message": "Item not found"})
 
 

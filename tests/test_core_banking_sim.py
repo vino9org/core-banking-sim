@@ -35,8 +35,7 @@ async def test_ledger(seed_csv_file) -> None:
     assert acc2 is not None
     assert acc2.avail_balance == Decimal(2000)
 
-    with pytest.raises(NotFoundError):
-        await ledger.get_account("AXX")
+    assert await ledger.get_account("AXX") is None
 
     _, acc2_out, _, _ = await ledger.transfer(acc1, acc2, Decimal("123.45"))
 
