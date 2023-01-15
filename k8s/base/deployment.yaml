@@ -23,7 +23,6 @@ spec:
         volumeMounts:
         - name: newrelic-ini
           mountPath: /etc/config
-        imagePullPolicy: Always
       volumes:
           - name: newrelic-ini
             configMap:
@@ -40,4 +39,4 @@ spec:
     app: core-banking-sim
   ports:
   - name: http
-    port: 5000
+    port: 8000
