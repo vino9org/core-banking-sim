@@ -14,12 +14,13 @@ spec:
     spec:
       containers:
       - name: core-banking-sim
-        image: ghcr.io/vino9org/core-banking-sim:0.1.0
+        image: ghcr.io/vino9org/core-banking-sim:0.1.1
         ports:
         - containerPort: 8000
         volumeMounts:
         - name: newrelic-ini
           mountPath: /etc/config
+        imagePullPolicy: Always
       volumes:
           - name: newrelic-ini
             configMap:
