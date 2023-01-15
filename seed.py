@@ -35,6 +35,7 @@ if __name__ == "__main__":
         print("batches must be <= 100")
         sys.exit(1)
 
+    batch_size = int(batch_size / batches)
     children = []
     for num in range(batches):
         start_n, stop_n = num * batch_size, (num + 1) * batch_size
