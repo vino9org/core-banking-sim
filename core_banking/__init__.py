@@ -2,6 +2,8 @@ import logging
 import os.path
 from typing import Optional
 
+from ulid import ULID
+
 from . import eventing, ledger, models
 
 SEED_DATA_FILE = "seed.csv"
@@ -48,7 +50,7 @@ async def local_transfer(request: models.FundTransferRequest) -> Optional[models
         )
 
         transfer = models.FundTransfer(
-            transaction_id=request.req_id,
+            transaction_id=str(ULID()),
             debit_customer_id=request.debit_customer_id,
             debit_account_id=request.debit_account_id,
             debit_prev_avail_balance=debit_acc_prev_bal,
@@ -66,10 +68,10 @@ async def local_transfer(request: models.FundTransferRequest) -> Optional[models
             memo=request.memo,
             transaction_date=request.transaction_date,
             status="completed",
-            limits_req_id=request.limits_req_id,
+            ref_id=request.ref_id,
         )
 
-        logger.info(f"publishing event for local transfer {request.req_id}")
+        logger.info(f"publishing event for local transfer {request.ref_id}")
         await eventing.enqueue_fund_transfer_event(transfer)
 
         return transfer

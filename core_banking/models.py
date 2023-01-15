@@ -7,7 +7,6 @@ from redis_om import HashModel
 
 
 class FundTransferRequest(BaseModel):
-    req_id: str
     debit_customer_id: str
     debit_account_id: str
     credit_account_id: str
@@ -15,7 +14,7 @@ class FundTransferRequest(BaseModel):
     currency: str
     transaction_date: str
     memo: str
-    limits_req_id: str
+    ref_id: str
 
 
 class FundTransfer(BaseModel):
@@ -41,7 +40,7 @@ class FundTransfer(BaseModel):
     transaction_date: str
     status: str
 
-    limits_req_id: str
+    ref_id: str
 
 
 class AccountCurrency(Enum):

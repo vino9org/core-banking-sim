@@ -50,7 +50,7 @@ async def test_local_transfer_api(seed_csv_file) -> None:
     ledger.init_from_csv(seed_csv_file)
 
     request = models.FundTransferRequest(
-        req_id="uniq_id",
+        ref_id="uniq_id",
         debit_customer_id="C11",
         debit_account_id="A11",
         credit_account_id="A22",
@@ -81,7 +81,6 @@ async def test_invalid_local_transfer(seed_csv_file) -> None:
     ledger.init_from_csv(seed_csv_file)
 
     request = models.FundTransferRequest(
-        req_id="uniq_id_blah",
         debit_customer_id="INVALID",
         debit_account_id="DOES NOT EXIST",
         credit_account_id="A22",
@@ -89,7 +88,7 @@ async def test_invalid_local_transfer(seed_csv_file) -> None:
         currency="SGD",
         transaction_date="2022-03-21",
         memo="test transfer from pytest",
-        limits_req_id="AAAA",
+        ref_id="AAAA",
     )
 
     prev_q_size = eventing._queue_.qsize()
