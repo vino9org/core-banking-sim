@@ -17,6 +17,9 @@ spec:
         image: ghcr.io/vino9org/core-banking-sim:0.1.1
         ports:
         - containerPort: 8000
+        env:
+        - name: REDIS_OM_URL
+          value: redis://:pass147@redis:6379/0
         volumeMounts:
         - name: newrelic-ini
           mountPath: /etc/config
