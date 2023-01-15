@@ -16,6 +16,6 @@ USER 3001:3001
 COPY --from=builder /install /
 COPY . .
 
-ENV NEW_RELIC_CONFIG_FILE /newrelic.ini
+ENV NEW_RELIC_CONFIG_FILE /etc/config/newrelic.ini
 CMD ["newrelic-admin", "run-program", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 EXPOSE 8000

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: core-banking-sim
+spec:
+  selector:
+    matchLabels:
+      app: core-banking-sim
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: core-banking-sim
+    spec:
+      containers:
+      - name: core-banking-sim
+        image: ghcr.io/vino9org/core-banking-sim:0.1.0
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - name: newrelic-ini
+        mountPath: /etc/config
+    volumes:
+        - name: newrelic-ini
+          configMap:
+            name: newrelic-ini        
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: core-banking-sim
+spec:
+  type: ClusterIP
+  selector:
+    app: core-banking-sim
+  ports:
+  - name: http
+    port: 5000
