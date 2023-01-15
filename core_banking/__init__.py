@@ -1,28 +1,11 @@
 import logging
-import os.path
 from typing import Optional
 
 from ulid import ULID
 
 from . import eventing, ledger, models
 
-SEED_DATA_FILE = "seed.csv"
-
 logger = logging.getLogger(__name__)
-
-
-def load_seed_data() -> None:
-    if os.path.isfile(SEED_DATA_FILE):
-        ledger.init_from_csv(SEED_DATA_FILE)
-        msg = f"loaded seed accounts from {SEED_DATA_FILE}"
-        logger.info(msg)
-
-
-load_seed_data()
-
-
-async def get_account_by_id(account_id: str) -> Optional[models.CheckingAccount]:
-    return ledger.get_account(account_id)
 
 
 async def local_transfer(request: models.FundTransferRequest) -> Optional[models.FundTransfer]:
@@ -30,12 +13,12 @@ async def local_transfer(request: models.FundTransferRequest) -> Optional[models
         logger.info("invalid local_transfer request: amount <= 0")
         return None
 
-    debit_acc = ledger.get_account(request.debit_account_id)
+    debit_acc = await ledger.get_account(request.debit_account_id)
     if debit_acc is None or debit_acc.customer_id != request.debit_customer_id:
         logger.info("invalid local_transfer request: invalid debit account or customer id")
         return None
 
-    credit_acc = ledger.get_account(request.credit_account_id)
+    credit_acc = await ledger.get_account(request.credit_account_id)
     if credit_acc is None:
         logger.info("invalid local_transfer request: invalid credit account")
         return None

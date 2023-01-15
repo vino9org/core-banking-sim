@@ -1,8 +1,9 @@
+import codecs
 import logging
 from typing import Optional
 
 import uvicorn
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, Response, UploadFile
 from fastapi.responses import JSONResponse
 from fastapi_utils.tasks import repeat_every
 from redis_om.model.model import NotFoundError
@@ -14,7 +15,7 @@ logging.basicConfig(level=logging.INFO, format=LOG_FORMAT, datefmt=LOG_DATE_FORM
 logger = logging.getLogger(__name__)
 
 # import after init logger in order to print log entries in the initialization code
-from core_banking import eventing, get_account_by_id, local_transfer, models  # noqa
+from core_banking import eventing, ledger, local_transfer, models  # noqa
 
 app = FastAPI()
 
@@ -29,10 +30,10 @@ async def ready():
     return "ready"
 
 
-@app.get("/core-banking/accounts/{account_id}")
+@app.get("/core-banking/accounts/{account_id}", response_model=models.CheckingAccount)
 async def account_detail(account_id: str):
     try:
-        return await get_account_by_id(account_id)
+        return await ledger.get_account(account_id)
     except NotFoundError:
         return JSONResponse(status_code=404, content={"message": "Item not found"})
 
@@ -43,6 +44,13 @@ async def new_local_transfer(request: models.FundTransferRequest, response: Resp
     transfer = await local_transfer(request)
     response.status_code = 200 if transfer else 400
     return transfer
+
+
+@app.post("/core-banking/_internal/seed/")
+async def seed_account_data(upload_file: UploadFile) -> None:
+    logger.info("seed account data")
+    ledger.init_from_csv(codecs.iterdecode(upload_file.file, "utf-8"))
+    logger.info("seed account data done")
 
 
 @app.on_event("startup")

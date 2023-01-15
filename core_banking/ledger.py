@@ -8,13 +8,24 @@ from retrying import retry
 from .models import AccountCurrency, AccountStatus, CheckingAccount
 
 
-def init_from_csv(csv_file: str) -> None:
-    with open(csv_file) as f:
-        for row in csv.DictReader(f):
-            dict_to_account(row).save()
+def init_from_csv(csv_file, batch_size=1000) -> None:
+    batch = []
+    for row in csv.DictReader(csv_file):
+        try:
+            batch.append(_dict_to_account(row))
+        except ValueError:
+            # ignore lines with invalid data
+            pass
+
+        if len(batch) >= batch_size:
+            _batch_save_accounts(batch)
+            batch.clear()
+
+    if len(batch) >= 0:
+        _batch_save_accounts(batch)
 
 
-def dict_to_account(row: dict) -> CheckingAccount:
+def _dict_to_account(row: dict) -> CheckingAccount:
     return CheckingAccount(
         pk=row["account_id"],
         customer_id=row["customer_id"],
@@ -26,7 +37,16 @@ def dict_to_account(row: dict) -> CheckingAccount:
     )
 
 
-def get_account(account_id: str) -> Optional[CheckingAccount]:
+def _batch_save_accounts(batch: list[CheckingAccount]) -> None:
+    redis = get_redis_connection()
+    with redis.pipeline() as pipe:
+        pipe.multi()
+        for account in batch:
+            account.save(pipe)
+        pipe.execute()
+
+
+async def get_account(account_id: str) -> Optional[CheckingAccount]:
     return CheckingAccount.get(account_id)
 
 

@@ -596,6 +596,17 @@ pytest = ">=5.0"
 dev = ["pre-commit", "tox", "pytest-asyncio"]
 
 [[package]]
+name = "python-multipart"
+version = "0.0.5"
+description = "A streaming multipart parser for Python"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+six = ">=1.4.0"
+
+[[package]]
 name = "python-ulid"
 version = "1.1.0"
 description = "Universally Unique Lexicographically Sortable Identifier"
@@ -860,7 +871,7 @@ testing = ["coverage (>=6.2)", "coverage-enable-subprocess (>=1)", "flaky (>=3.7
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "4eb73e884b07e83b4a56b99cb5d0129aca77229842560852d800535588df5b58"
+content-hash = "a46046e01ee60ecc05a517f899410033601d6174f66f1e32e313324c165e3d87"
 
 [metadata.files]
 anyio = []
@@ -923,6 +934,7 @@ pytest = []
 pytest-asyncio = []
 pytest-cov = []
 pytest-mock = []
+python-multipart = []
 python-ulid = []
 pyyaml = []
 redis = []
