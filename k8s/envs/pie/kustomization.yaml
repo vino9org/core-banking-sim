@@ -14,3 +14,8 @@ configMapGenerator:
   - name: newrelic-ini
     files:
       - newrelic.ini
+
+secretGenerator:
+  - name: aws-credential
+    envs:
+      - aws.env

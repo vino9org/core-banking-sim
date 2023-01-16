@@ -14,12 +14,24 @@ spec:
     spec:
       containers:
       - name: core-banking-sim
-        image: ghcr.io/vino9org/core-banking-sim:0.1.2
+        image: ghcr.io/vino9org/core-banking-sim:0.1.3
         ports:
         - containerPort: 8000
         env:
         - name: REDIS_OM_URL
           value: redis://:pass147@redis:6379/0
+        - name: EVENT_SINK_TYPE
+          value: AWS_EVENTBRIDGE
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws-credential
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws-credential
+              key: AWS_SECRET_ACCESS_KEY
         volumeMounts:
         - name: newrelic-ini
           mountPath: /etc/config

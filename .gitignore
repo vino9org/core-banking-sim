@@ -33,4 +33,4 @@ seed.csv
 newrelic.ini
 
 # misc
-x
+*.env
