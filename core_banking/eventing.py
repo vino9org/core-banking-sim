@@ -63,7 +63,7 @@ async def send_events(count: int):
             logger.info("put_events: ", response)
         elif sink_type == "NATS":
             if nats_client is None:
-                nats_url = os.environ.get("NATS_SERVER_URL", "nats://demo.nats.io:4222")
+                nats_url = os.environ.get("NATS_SERVER_URL", "nats://nats.nats-system.svc.cluster.local:4222")
                 nats_client = await nats.connect(nats_url)
             js = nats_client.jetstream()
             await js.add_stream(name="transfer-stream", subjects=["transfer.1"])
