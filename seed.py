@@ -10,7 +10,7 @@ def post_seed_data(url: str, start_n: int, stop_n: int) -> None:
         temp_f.write("customer_id,account_id,currency,avail_balance,balance,status\n")
         for nn in range(start_n, stop_n):
             seq = str(nn).zfill(7)
-            line = f"C{seq},A{seq},SGD,100000.00,100000.00,1\n"
+            line = f"CUS_{seq},ACC_{seq},SGD,100000.00,100000.00,1\n"
             temp_f.write(f"{line}")
 
         temp_f.seek(0)
