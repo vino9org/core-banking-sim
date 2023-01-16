@@ -57,14 +57,13 @@ async def send_events(count: int):
     if events:
         if sink_type == "AWS_EVENTBRIDGE":
             logger.info(f"...send {len(events)} events to EventBridge...")
-            if aws_client is None:
-                aws_client = boto3.client("events")
+            aws_client = aws_client or boto3.client("events")
             response = aws_client.put_events(Entries=events)
             logger.info("put_events: ", response)
         elif sink_type == "NATS":
-            if nats_client is None:
-                nats_url = os.environ.get("NATS_SERVER_URL", "nats://nats.nats-system.svc.cluster.local:4222")
-                nats_client = await nats.connect(nats_url)
+            nats_client = nats_client or await nats.connect(
+                os.environ.get("NATS_SERVER_URL", "nats://nats.nats-system.svc.cluster.local:4222")
+            )
             js = nats_client.jetstream()
             await js.add_stream(name="transfer-stream", subjects=["transfer.1"])
             for evt in events:
