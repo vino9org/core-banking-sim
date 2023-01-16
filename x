@@ -1,7 +1,7 @@
 TAG=$1
 
 if [ "$TAG" = "" ]; then
-   TAG=0.1.2
+   TAG=0.1.4
 fi
 
 git push origin --delete $TAG
