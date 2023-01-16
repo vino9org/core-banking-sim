@@ -1,13 +1,20 @@
 import asyncio
 import json
 import logging
+import os
 from datetime import datetime
 from decimal import Decimal
 from typing import Any
 
+import boto3
+import nats
+
 from .models import FundTransfer
 
 logger = logging.getLogger(__name__)
+
+aws_client = None
+nats_client = None
 
 
 # handles serializatino of Decimal
@@ -43,8 +50,24 @@ async def dequeue_events(count: int = 10) -> list[FundTransfer]:
 
 
 async def send_events(count: int):
+    global aws_client, nats_client
+
     events = await dequeue_events(count)
+    sink_type = os.environ.get("EVENT_SINK_TYPE", "")
     if events:
-        logger.info(f"...send {len(events)} events to EventBridge...")
-        # response = client.put_events(Entries=events)
-        # logger.info("put_events: ", response)
+        if sink_type == "AWS_EVENTBRIDGE":
+            logger.info(f"...send {len(events)} events to EventBridge...")
+            if aws_client is None:
+                aws_client = boto3.client("events")
+            response = aws_client.put_events(Entries=events)
+            logger.info("put_events: ", response)
+        elif sink_type == "NATS":
+            if nats_client is None:
+                nats_url = os.environ.get("NATS_SERVER_URL", "nats://demo.nats.io:4222")
+                nats_client = await nats.connect(nats_url)
+            js = nats_client.jetstream()
+            await js.add_stream(name="transfer-stream", subjects=["transfer.1"])
+            for evt in events:
+                await js.publish("transfer.1", json.dumps(evt).encode())
+        else:
+            logger.info("... NO EVENT_SINK_TYPE configured, skip publishing ...")
