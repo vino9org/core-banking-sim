@@ -3,8 +3,7 @@ import logging
 from typing import Optional
 
 import uvicorn
-from fastapi import FastAPI, Response, UploadFile
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, HTTPException, Response, UploadFile
 from fastapi_utils.tasks import repeat_every
 
 LOG_FORMAT = "%(asctime)s %(levelname)s: %(message)s"
@@ -14,7 +13,7 @@ logging.basicConfig(level=logging.INFO, format=LOG_FORMAT, datefmt=LOG_DATE_FORM
 logger = logging.getLogger(__name__)
 
 # import after init logger in order to print log entries in the initialization code
-from core_banking import eventing, ledger, local_transfer, models  # noqa
+from core_banking import ValidationError, eventing, ledger, local_transfer, models  # noqa
 
 app = FastAPI()
 
@@ -32,18 +31,18 @@ async def ready():
 @app.get("/core-banking/accounts/{account_id}", response_model=models.CheckingAccount)
 async def account_detail(account_id: str):
     account = await ledger.get_account(account_id)
-    if account is not None:
-        return account
-    else:
-        return JSONResponse(status_code=404, content={"message": "Item not found"})
+    if account is None:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return account
 
 
 @app.post("/core-banking/local-transfers", response_model=models.FundTransfer)
 async def new_local_transfer(request: models.FundTransferRequest, response: Response) -> Optional[models.FundTransfer]:
     logger.info("processing request: %s", request)
-    transfer = await local_transfer(request)
-    response.status_code = 200 if transfer else 400
-    return transfer
+    try:
+        return await local_transfer(request)
+    except ValidationError:
+        raise HTTPException(status_code=422, detail="validation error for the request")
 
 
 @app.post("/core-banking/_internal/seed/")

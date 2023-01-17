@@ -86,7 +86,7 @@ async def test_invalid_local_transfer(seed_csv_file) -> None:
     response = client.post(
         "/core-banking/local-transfers", headers={"Content-Type": "application/json"}, data=request.json()
     )
-    assert response.status_code == 400
+    assert response.status_code == 422
     assert eventing._queue_.qsize() == prev_q_size
 
 

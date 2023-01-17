@@ -57,13 +57,13 @@ async def get_account(account_id: str) -> Optional[CheckingAccount]:
 @retry(stop_max_attempt_number=3, wait_random_min=200, wait_random_max=500)
 async def transfer(
     debit_acc_in: CheckingAccount, credit_acc_in: CheckingAccount, amount: Decimal
-) -> Tuple[CheckingAccount, CheckingAccount, Decimal, Decimal]:
+) -> Optional[Tuple[CheckingAccount, CheckingAccount, Decimal, Decimal]]:
     redis = get_redis_connection()
     redis.watch(debit_acc_in.pk, credit_acc_in.pk)
 
     debit_acc = CheckingAccount.get(debit_acc_in.pk)
     if debit_acc.avail_balance < amount:
-        raise ValueError("insufficient funds")
+        return None
 
     credit_acc = CheckingAccount.get(credit_acc_in.pk)
 
