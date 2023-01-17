@@ -1,0 +1,20 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: core-banking-sim-ingress
+  annotations:
+    konghq.com/protocols: "http"
+spec:
+  ingressClassName: kong
+  rules:
+  - host: pie4.lan
+    http:
+      paths:
+      - pathType: ImplementationSpecific
+        path: /core-banking
+        backend:
+          service:
+            name: core-banking-sim
+            port:
+              number: 8000

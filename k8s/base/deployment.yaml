@@ -21,7 +21,7 @@ spec:
         - name: REDIS_OM_URL
           value: redis://:pass147@redis:6379/0
         - name: EVENT_SINK_TYPE
-          value: AWS_EVENTBRIDGE
+          value: NONE
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
             secretKeyRef:
