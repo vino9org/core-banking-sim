@@ -58,3 +58,14 @@ jobs:
           platforms: "linux/amd64,linux/arm64"
           push: true
           tags: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+
+      - name: Delete old images
+        uses: snok/container-retention-policy@v1
+        with:
+          image-names: ${{ github.ref_name }}
+          cut-off: One month ago UTC
+          account-type: org
+          org-name: vino9org
+          keep-at-least: 3
+          untagged-only: false
+          token: ${{ secrets.USER_TOKEN }}
