@@ -20,7 +20,7 @@ async def local_transfer(request: models.FundTransferRequest) -> Optional[models
 
     # BYPASS=true will bypass all backend logic and return a dummy response
     # used in performance testing measure the fastest possible response time
-    if os.environ.get("BYPASS") != "true":
+    if os.environ.get("BYPASS") != "1":
         debit_acc = await ledger.get_account(request.debit_account_id)
         if debit_acc is None or debit_acc.customer_id != request.debit_customer_id:
             raise ValidationError("invalid debit account or customer id")
@@ -69,6 +69,7 @@ async def local_transfer(request: models.FundTransferRequest) -> Optional[models
 
         return transfer
     else:
+        logger.info(f"returning dummy result for transfer {request.ref_id}")
         return models.FundTransfer(
             transaction_id=str(ULID()),
             debit_customer_id=request.debit_customer_id,

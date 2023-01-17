@@ -23,7 +23,7 @@ spec:
         - name: EVENT_SINK_TYPE
           value: NONE
         - name: BYPASS
-          value: "false"
+          value: "0"
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
             secretKeyRef:
