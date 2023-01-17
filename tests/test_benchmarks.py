@@ -70,6 +70,7 @@ def test_transer_api(benchmark):
     )
 
 
+@pytest.mark.skipif(os.environ.get("BENCH") != "1", reason="Benchmarks are not run by default")
 def test_http_transfer_api(benchmark):
     benchmark.pedantic(
         post_to_transfer_api,
