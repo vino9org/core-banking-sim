@@ -22,6 +22,8 @@ spec:
           value: redis://:pass147@redis:6379/0
         - name: EVENT_SINK_TYPE
           value: NONE
+        - name: BYPASS
+          value: "false"
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
             secretKeyRef:
