@@ -17,5 +17,5 @@ COPY --from=builder /install /
 COPY . .
 
 ENV NEW_RELIC_CONFIG_FILE /etc/config/newrelic.ini
-CMD ["newrelic-admin", "run-program", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["newrelic-admin", "run-program", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "3"]
 EXPOSE 8000

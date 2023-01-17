@@ -73,4 +73,4 @@ if __name__ == "__main__":
     log_config["formatters"]["default"]["fmt"] = LOG_FORMAT
     log_config["formatters"]["default"]["datefmt"] = LOG_DATE_FORMAT
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, workers=1)
