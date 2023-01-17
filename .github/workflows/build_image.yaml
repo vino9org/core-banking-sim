@@ -76,9 +76,7 @@ jobs:
         with:
           owner: ${{ github.repository_owner }}
           package-name: ${{ github.event.repository.name }}
-          # owner: vino9org
-          # package-name: core-banking-sim
           package-type: container
-          min-versions-to-keep: 3
+          min-versions-to-keep: 5
           ignore-versions: latest
           token: ${{ secrets.USER_TOKEN }}
