@@ -60,12 +60,11 @@ jobs:
           tags: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
 
       - name: Delete old images
-        uses: snok/container-retention-policy@v1
+        uses: actions/delete-package-versions@v4
         with:
-          image-names: ${{ github.ref_name }}
-          cut-off: One month ago UTC
-          account-type: org
-          org-name: vino9org
-          keep-at-least: 3
-          untagged-only: false
+          owner: vino9org
+          package-names: ${{ github.ref_name }}
+          package-type: container
+          min-versions-to-keep: 3
+          ignore-versions: latest
           token: ${{ secrets.USER_TOKEN }}
