@@ -5,7 +5,7 @@ on:
     branches:
       - develop
     tags:
-      - "0.*"
+      - v[0-9].*
 
 jobs:
   python-test-and-build-image:
@@ -69,12 +69,13 @@ jobs:
           platforms: "linux/amd64,linux/arm64"
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
       - name: Delete old images
         uses: actions/delete-package-versions@v4
         with:
           owner: vino9org
-          package-name: ${{ github.repository }}
+          package-name: core-banking-sim
           package-type: container
           min-versions-to-keep: 3
           ignore-versions: latest
