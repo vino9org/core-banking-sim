@@ -48,7 +48,9 @@ jobs:
             tags: |
               type=ref,event=tag
               type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'develop') }}
-
+            flavor: |
+              latest=false
+              
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
