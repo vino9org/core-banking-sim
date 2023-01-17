@@ -79,7 +79,7 @@ where <command> is
 
    gen   <csv_file> <start> <stop>   generate seed data using id from <start> to <stop> and write output to csv file
    load  <csv_file>                  load seed data from csv file.
-   post  <csv_file> <url>            read seed data csv file and post to API endpoint
+   post  <url> <csv_file>            read seed data csv file and post to API endpoint
    bulk  <start> <stop>              generate seed data in redis binary protocol format using id start to stop and
                                      write output to stdout, which is usable with for bulk loading with redis-cli --pipe
 """
@@ -106,7 +106,7 @@ if __name__ == "__main__":
             gen_seed_csv(sys.argv[2], start_n, stop_n)
 
     elif sys.argv[1] == "post" and len(sys.argv) == 4:
-        with open(sys.argv[3], "w") as f:
+        with open(sys.argv[3], "r") as f:
             post_seed_data(sys.argv[2], sys.argv[3])
 
     else:
