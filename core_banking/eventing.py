@@ -25,7 +25,7 @@ class JSONEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-_queue_: asyncio.Queue = asyncio.Queue(maxsize=10000)
+_queue_: asyncio.Queue = asyncio.Queue(maxsize=50000)
 
 
 def fund_transfer_event(transfer: FundTransfer) -> dict[Any, Any]:

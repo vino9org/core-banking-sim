@@ -53,9 +53,9 @@ async def seed_account_data(upload_file: UploadFile) -> None:
 
 
 @app.on_event("startup")
-@repeat_every(seconds=5)
+@repeat_every(seconds=2)
 async def flush_event_queue():
-    await eventing.send_events(1000)
+    await eventing.send_events(5000)
 
 
 @app.on_event("shutdown")
