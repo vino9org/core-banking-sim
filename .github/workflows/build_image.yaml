@@ -5,9 +5,7 @@ on:
     branches:
       - develop
     tags:
-      - v0.*
-      - v1.*
-      - v2.*
+      - v[0-9].*
 
 jobs:
   python-test-and-build-image:
