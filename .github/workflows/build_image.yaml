@@ -31,11 +31,6 @@ jobs:
         run: |
           flake8 --count --show-source --statistics
 
-      - name: start Redis
-        uses: shogo82148/actions-setup-redis@v1
-        with:
-          redis-version: '6.x'
-
       - name: Unit tests
         run: |
           pytest -v -s
