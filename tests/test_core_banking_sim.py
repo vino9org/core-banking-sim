@@ -103,8 +103,9 @@ async def test_get_account_by_invalid_id(seed_csv_file) -> None:
 
 async def test_seed_accounts() -> None:
     response = client.post(
-        "/core-banking/_internal/seed/", files={"content-type": "text/csv", "upload_file": StringIO(_TEST_DATA_)}
-    )
+        "/core-banking/_internal/seed/",
+        iles={"content-type": "text/csv", "upload_file": StringIO(_TEST_DATA_)},  # type: ignore
+    )  # noqa
     assert response.status_code == 200
 
     response = client.get("/core-banking/accounts/A11")

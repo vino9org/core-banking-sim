@@ -62,7 +62,7 @@ def gen_seed_csv(filename: str, start_n: int, stop_n: int) -> None:
 def post_seed_data(url: str, filename: str) -> None:
     with open(filename, "r") as f:
         response = requests.post(
-            f"{url}/core-banking/_internal/seed/", files={"content-type": "text/csv", "upload_file": f}
+            f"{url}/core-banking/_internal/seed/", files={"content-type": "text/csv", "upload_file": f}  # type: ignore
         )
         if response.status_code != 200:
             print(f"got error posting data. {response.status_code}, {response.text}")
