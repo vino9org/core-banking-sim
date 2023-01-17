@@ -25,6 +25,8 @@ python-multipart = "^0.0.5"
 requests = "^2.28.2"
 boto3 = "^1.26.50"
 nats-py = "^2.2.0"
+pytest-benchmark = "^4.0.0"
+fastapi-cprofile = "^0.0.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
