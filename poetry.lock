@@ -709,6 +709,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "gprof2dot"
+version = "2022.7.29"
+description = "Generate a dot graph from the output of several profilers."
+category = "dev"
+optional = false
+python-versions = ">=2.7"
+
+[[package]]
 name = "greenlet"
 version = "2.0.1"
 description = "Lightweight in-process concurrent programming"
@@ -1380,7 +1388,7 @@ testing = ["coverage (>=6.2)", "coverage-enable-subprocess (>=1)", "flaky (>=3.7
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "b575fcd999ef234a13195b87248976f64cd71a744c229c02c3326dc5a704f577"
+content-hash = "035b9529377106907b7d43e2f62b17f0d01178fda324e38dca8c091f2fcff834"
 
 [metadata.files]
 anyio = []
@@ -1421,6 +1429,7 @@ flake8-isort = []
 flake8-variables-names = [
     {file = "flake8_variables_names-0.0.4.tar.gz", hash = "sha256:d6fa0571a807c72940b5773827c5760421ea6f8206595ff0a8ecfa01e42bf2cf"},
 ]
+gprof2dot = []
 greenlet = []
 h11 = []
 hiredis = []

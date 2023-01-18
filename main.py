@@ -1,9 +1,11 @@
 import codecs
 import logging
+import os
 from typing import Optional
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, Response, UploadFile
+from fastapi_cprofile.profiler import CProfileMiddleware
 from fastapi_utils.tasks import repeat_every
 
 LOG_FORMAT = "%(asctime)s %(levelname)s: %(message)s"
@@ -16,6 +18,16 @@ logger = logging.getLogger(__name__)
 from core_banking import ValidationError, eventing, ledger, local_transfer, models  # noqa
 
 app = FastAPI()
+if os.environ.get("ENABLE_PROFILING", "") == "1":
+    app.add_middleware(
+        CProfileMiddleware,
+        enable=True,
+        print_each_request=False,
+        strip_dirs=False,
+        server_app=app,
+        filename="/tmp/core-banking-sim.pstats",
+        sort_by="cumulative",
+    )
 
 
 @app.get("/healthz")
