@@ -4,7 +4,6 @@ from typing import Optional, Tuple
 
 from redis_om import get_redis_connection
 from redis_om.model.model import NotFoundError
-from retrying import retry
 
 from .models import AccountCurrency, AccountStatus, CheckingAccount
 
@@ -54,7 +53,6 @@ async def get_account(account_id: str) -> Optional[CheckingAccount]:
         return None
 
 
-@retry(stop_max_attempt_number=3, wait_random_min=200, wait_random_max=500)
 async def transfer(
     debit_acc_in: CheckingAccount, credit_acc_in: CheckingAccount, amount: Decimal
 ) -> Optional[Tuple[CheckingAccount, CheckingAccount, Decimal, Decimal]]:
