@@ -1,3 +1,4 @@
+import asyncio
 import os
 import random
 from datetime import date
@@ -36,11 +37,15 @@ def setup_benchmark_test_accounts():
 
 
 def call_transfer_api():
-    local_transfer(test_request)
+    loop = asyncio.get_event_loop()
+    coroutine = ledger.transfer(debit_acc, credit_acc, Decimal(1.0))
+    loop.run_until_complete(coroutine)
 
 
 def call_ledger_transfer():
-    ledger.transfer(debit_acc, credit_acc, Decimal(1.0))
+    loop = asyncio.get_event_loop()
+    coroutine = local_transfer(test_request)
+    loop.run_until_complete(coroutine)
 
 
 def post_to_transfer_api():
