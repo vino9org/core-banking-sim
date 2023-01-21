@@ -4,8 +4,8 @@ import sys
 from datetime import datetime
 from typing import List
 
+import httpx
 import redis
-import requests
 from redis_om.model.encoders import jsonable_encoder
 
 from core_banking.ledger import init_from_csv
@@ -62,7 +62,7 @@ def gen_seed_csv(filename: str, start_n: int, stop_n: int) -> None:
 
 def post_seed_data(url: str, filename: str) -> None:
     with open(filename, "r") as f:
-        response = requests.post(
+        response = httpx.post(
             f"{url}/core-banking/_internal/seed/", files={"content-type": "text/csv", "upload_file": f}  # type: ignore
         )
         if response.status_code != 200:
