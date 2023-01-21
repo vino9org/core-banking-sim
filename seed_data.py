@@ -1,10 +1,11 @@
+import asyncio
 import csv
 import sys
 from datetime import datetime
 from typing import List
 
+import httpx
 import redis
-import requests
 from redis_om.model.encoders import jsonable_encoder
 
 from core_banking.ledger import init_from_csv
@@ -61,7 +62,7 @@ def gen_seed_csv(filename: str, start_n: int, stop_n: int) -> None:
 
 def post_seed_data(url: str, filename: str) -> None:
     with open(filename, "r") as f:
-        response = requests.post(
+        response = httpx.post(
             f"{url}/core-banking/_internal/seed/", files={"content-type": "text/csv", "upload_file": f}  # type: ignore
         )
         if response.status_code != 200:
@@ -98,7 +99,7 @@ if __name__ == "__main__":
 
     elif sys.argv[1] == "load" and len(sys.argv) == 3:
         with open(sys.argv[2], "r") as f:
-            init_from_csv(f, 10000)
+            asyncio.run(init_from_csv(f, 10000))
 
     elif sys.argv[1] == "gen" and len(sys.argv) == 5:
         start_n, stop_n = int(sys.argv[3]), int(sys.argv[4]) + 1
