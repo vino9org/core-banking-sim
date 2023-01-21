@@ -1,3 +1,4 @@
+import asyncio
 import csv
 import sys
 from datetime import datetime
@@ -98,7 +99,7 @@ if __name__ == "__main__":
 
     elif sys.argv[1] == "load" and len(sys.argv) == 3:
         with open(sys.argv[2], "r") as f:
-            init_from_csv(f, 10000)
+            asyncio.run(init_from_csv(f, 10000))
 
     elif sys.argv[1] == "gen" and len(sys.argv) == 5:
         start_n, stop_n = int(sys.argv[3]), int(sys.argv[4]) + 1

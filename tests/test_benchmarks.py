@@ -15,15 +15,16 @@ debit_acc, credit_acc, test_request = None, None, None
 
 ROUNDS = int(os.environ.get("BENCH_ROUNDS", 1000))
 
-client = TestClient(main.app)
-
 
 def setup_benchmark_test_accounts():
     global debit_acc, credit_acc, test_request
-    debit_acc = ledger._dict_to_account(account_for(random.randint(10000, 20000)))
-    credit_acc = ledger._dict_to_account(account_for(random.randint(10000, 20000)))
-    debit_acc.save()
-    credit_acc.save()
+
+    debit_acc = models.CheckingAccount(**account_for(random.randint(120001, 120100)))
+    credit_acc = models.CheckingAccount(**account_for(random.randint(120001, 120100)))
+
+    asyncio.run(debit_acc.save())
+    asyncio.run(credit_acc.save())
+
     test_request = models.FundTransferRequest(
         debit_customer_id=debit_acc.customer_id,
         debit_account_id=debit_acc.account_id,
@@ -37,18 +38,15 @@ def setup_benchmark_test_accounts():
 
 
 def call_transfer_api():
-    loop = asyncio.get_event_loop()
-    coroutine = ledger.transfer(debit_acc, credit_acc, Decimal(1.0))
-    loop.run_until_complete(coroutine)
+    asyncio.run(ledger.transfer(debit_acc, credit_acc, Decimal(1.0)))
 
 
 def call_ledger_transfer():
-    loop = asyncio.get_event_loop()
-    coroutine = local_transfer(test_request)
-    loop.run_until_complete(coroutine)
+    asyncio.run(local_transfer(test_request))
 
 
 def post_to_transfer_api():
+    client = TestClient(main.app)
     response = client.post(
         "/core-banking/local-transfers", headers={"Content-Type": "application/json"}, data=test_request.json()
     )
@@ -65,7 +63,7 @@ def test_ledger_transfer(benchmark):
     )
 
 
-@pytest.mark.skipif(os.environ.get("BENCH") != "1", reason="Benchmarks are not run by default")
+@pytest.mark.skipif(os.environ.get("BENCH") != "2", reason="Benchmarks are not run by default")
 def test_transer_api(benchmark):
     benchmark.pedantic(
         call_transfer_api,
@@ -75,7 +73,7 @@ def test_transer_api(benchmark):
     )
 
 
-@pytest.mark.skipif(os.environ.get("BENCH") != "1", reason="Benchmarks are not run by default")
+@pytest.mark.skipif(os.environ.get("BENCH") != "2", reason="Benchmarks are not run by default")
 def test_http_transfer_api(benchmark):
     benchmark.pedantic(
         post_to_transfer_api,

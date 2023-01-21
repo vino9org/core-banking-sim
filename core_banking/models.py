@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum, IntEnum
 
+from aredis_om.model import HashModel
 from pydantic import BaseModel
-from redis_om import HashModel
 
 
 class FundTransferRequest(BaseModel):

@@ -60,7 +60,7 @@ async def new_local_transfer(request: models.FundTransferRequest, response: Resp
 @app.post("/core-banking/_internal/seed/")
 async def seed_account_data(upload_file: UploadFile) -> None:
     logger.info("seed account data")
-    ledger.init_from_csv(codecs.iterdecode(upload_file.file, "utf-8"))
+    await ledger.init_from_csv(codecs.iterdecode(upload_file.file, "utf-8"))
     logger.info("seed account data done")
 
 
