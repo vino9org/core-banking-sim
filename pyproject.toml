@@ -23,7 +23,6 @@ newrelic = "^8.5.0"
 python-multipart = "^0.0.5"
 boto3 = "^1.26.50"
 nats-py = "^2.2.0"
-pytest-benchmark = "^4.0.0"
 fastapi-cprofile = "^0.0.2"
 redis = {extras = ["hiredis"], version = "^4.4.2"}
 redis-om = "^0.1.2"

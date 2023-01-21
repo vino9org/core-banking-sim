@@ -963,14 +963,6 @@ pyyaml = ">=5.1"
 virtualenv = ">=20.10.0"
 
 [[package]]
-name = "py-cpuinfo"
-version = "9.0.0"
-description = "Get CPU info with pure Python"
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "pycodestyle"
 version = "2.8.0"
 description = "Python style guide checker"
@@ -1035,23 +1027,6 @@ pytest = ">=6.1.0"
 [package.extras]
 docs = ["sphinx (>=5.3)", "sphinx-rtd-theme (>=1.0)"]
 testing = ["coverage (>=6.2)", "hypothesis (>=5.7.1)", "flaky (>=3.5.0)", "mypy (>=0.931)", "pytest-trio (>=0.7.0)"]
-
-[[package]]
-name = "pytest-benchmark"
-version = "4.0.0"
-description = "A ``pytest`` fixture for benchmarking code. It will group the tests into rounds that are calibrated to the chosen timer."
-category = "main"
-optional = false
-python-versions = ">=3.7"
-
-[package.dependencies]
-py-cpuinfo = "*"
-pytest = ">=3.8"
-
-[package.extras]
-aspect = ["aspectlib"]
-elasticsearch = ["elasticsearch"]
-histogram = ["pygal", "pygaljs"]
 
 [[package]]
 name = "pytest-cov"
@@ -1392,7 +1367,7 @@ testing = ["coverage (>=6.2)", "coverage-enable-subprocess (>=1)", "flaky (>=3.7
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "0d146ec9a3bf08345ca084854ccd0f7a048fc1ffcc57b3f8bb7e789996c5b256"
+content-hash = "f97a3d4fd5c2e1e28f996d14496b28d99389451c7525a25d50aaa36ae4fa5c5a"
 
 [metadata.files]
 anyio = []
@@ -1456,13 +1431,11 @@ platformdirs = []
 pluggy = []
 pptree = []
 pre-commit = []
-py-cpuinfo = []
 pycodestyle = []
 pydantic = []
 pyflakes = []
 pytest = []
 pytest-asyncio = []
-pytest-benchmark = []
 pytest-cov = []
 pytest-mock = []
 python-dateutil = [
