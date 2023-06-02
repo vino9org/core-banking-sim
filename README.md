@@ -25,7 +25,6 @@ $ poetry shell
 ```shell
 # run unit tests
 pytest
-
 ```
 
 ## integrate with New Relic
