@@ -10,7 +10,8 @@ from fastapi_utils.tasks import repeat_every
 
 LOG_FORMAT = "%(asctime)s %(levelname)s: %(message)s"
 LOG_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
-logging.basicConfig(level=logging.INFO, format=LOG_FORMAT, datefmt=LOG_DATE_FORMAT)
+LOG_LEVEL = os.environ.get("LOG_LEVEL", "WARN")
+logging.basicConfig(level=logging.getLevelName(LOG_LEVEL), format=LOG_FORMAT, datefmt=LOG_DATE_FORMAT)
 
 logger = logging.getLogger(__name__)
 
