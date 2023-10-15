@@ -1,0 +1,16 @@
+{
+  "packages": [
+    "poetry@1.4.2",
+    "python@3.9"
+  ],
+  "shell": {
+    "init_hook": [
+      "poetry install"
+    ],
+    "scripts": {
+      "test": [
+        "poetry run pytest -v"
+      ]
+    }
+  }
+}
