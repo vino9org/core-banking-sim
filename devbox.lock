@@ -22,24 +22,24 @@
         }
       }
     },
-    "python@3.9": {
+    "python@3.11": {
       "last_modified": "2023-09-27T18:02:17Z",
       "plugin_version": "0.0.1",
-      "resolved": "github:NixOS/nixpkgs/517501bcf14ae6ec47efd6a17dda0ca8e6d866f9#python39",
+      "resolved": "github:NixOS/nixpkgs/517501bcf14ae6ec47efd6a17dda0ca8e6d866f9#python311",
       "source": "devbox-search",
-      "version": "3.9.18",
+      "version": "3.11.4",
       "systems": {
         "aarch64-darwin": {
-          "store_path": "/nix/store/gmw5k94f67bvd57xx9lvhk2ciks85aaq-python3-3.9.18"
+          "store_path": "/nix/store/rycxjkclx801wrhwrgllak0302xzjdvx-python3-3.11.4"
         },
         "aarch64-linux": {
-          "store_path": "/nix/store/dnxdjv10n36mcj123acsbh4fad0hn8j7-python3-3.9.18"
+          "store_path": "/nix/store/h4xi1djsmhk7bjdipz58xkfnf8lc9mpm-python3-3.11.4"
         },
         "x86_64-darwin": {
-          "store_path": "/nix/store/c7ycjazx93w9ndgka348vj304cap6858-python3-3.9.18"
+          "store_path": "/nix/store/yqs2zxkxn61xzimdaz1pbgawk2lnm0d8-python3-3.11.4"
         },
         "x86_64-linux": {
-          "store_path": "/nix/store/26wf73xxskg8ar6fiz0yk64w3j6hhk5a-python3-3.9.18"
+          "store_path": "/nix/store/3k7is7nc2xbav8a48vx7arad522d8czx-python3-3.11.4"
         }
       }
     }

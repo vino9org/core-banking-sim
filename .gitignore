@@ -34,3 +34,6 @@ newrelic.ini
 
 # misc
 *.env
+
+# data files
+*.csv

@@ -1,7 +1,7 @@
 {
   "packages": [
     "poetry@1.4.2",
-    "python@3.9"
+    "python@3.11"
   ],
   "shell": {
     "init_hook": [
