@@ -5,7 +5,6 @@ from typing import Optional
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, Response, UploadFile
-from fastapi_cprofile.profiler import CProfileMiddleware
 from fastapi_utils.tasks import repeat_every
 
 LOG_FORMAT = "%(asctime)s %(levelname)s: %(message)s"
@@ -13,22 +12,13 @@ LOG_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "WARN")
 logging.basicConfig(level=logging.getLevelName(LOG_LEVEL), format=LOG_FORMAT, datefmt=LOG_DATE_FORMAT)
 
+
 logger = logging.getLogger(__name__)
 
 # import after init logger in order to print log entries in the initialization code
 from core_banking import ValidationError, eventing, ledger, local_transfer, models  # noqa
 
 app = FastAPI()
-if os.environ.get("ENABLE_PROFILING", "") == "1":
-    app.add_middleware(
-        CProfileMiddleware,
-        enable=True,
-        print_each_request=False,
-        strip_dirs=False,
-        server_app=app,
-        filename="/tmp/core-banking-sim.pstats",
-        sort_by="cumulative",
-    )
 
 
 @app.get("/healthz")
@@ -86,4 +76,4 @@ if __name__ == "__main__":
     log_config["formatters"]["default"]["fmt"] = LOG_FORMAT
     log_config["formatters"]["default"]["datefmt"] = LOG_DATE_FORMAT
 
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, workers=1)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, workers=0)
