@@ -8,7 +8,7 @@ from aredis_om.model.model import NotFoundError
 from .models import CheckingAccount
 
 
-async def init_from_csv(csv_file, batch_size=1000) -> None:
+async def init_from_csv(csv_file, batch_size=10000) -> None:
     batch = []
     for row in csv.DictReader(csv_file, delimiter=",", dialect=csv.excel, quoting=csv.QUOTE_NONE):
         try:
@@ -47,34 +47,32 @@ async def get_account(account_id: str) -> Optional[CheckingAccount]:
 async def transfer(
     debit_acc_in: CheckingAccount, credit_acc_in: CheckingAccount, amount: Decimal
 ) -> Optional[Tuple[CheckingAccount, CheckingAccount, Decimal, Decimal]]:
-    conn = await get_redis_connection()
+    debit_acc = await CheckingAccount.get(debit_acc_in.pk)
+    if debit_acc.avail_balance < amount:
+        return None
 
     try:
-        await conn.watch(debit_acc_in.pk, credit_acc_in.pk)
-
-        debit_acc = await CheckingAccount.get(debit_acc_in.pk)
-        if debit_acc.avail_balance < amount:
-            return None
-
-        credit_acc = await CheckingAccount.get(credit_acc_in.pk)
-
-        debit_prev_bal = debit_acc.balance
-        credit_prev_bal = credit_acc.balance
-
-        debit_bal = debit_prev_bal - amount
-        credit_bal = credit_prev_bal + amount
-
-        debit_acc.balance = debit_bal
-        debit_acc.avail_balance = debit_bal
-        credit_acc.balance = credit_bal
-        credit_acc.avail_balance = credit_bal
-
+        conn = await get_redis_connection()
         async with await conn.pipeline() as pipe:
+            await pipe.watch(debit_acc_in.pk, credit_acc_in.pk)
+
+            credit_acc = await CheckingAccount.get(credit_acc_in.pk)
+
+            debit_prev_bal = debit_acc.balance
+            credit_prev_bal = credit_acc.balance
+
+            debit_bal = debit_prev_bal - amount
+            credit_bal = credit_prev_bal + amount
+
+            debit_acc.balance = debit_bal
+            debit_acc.avail_balance = debit_bal
+            credit_acc.balance = credit_bal
+            credit_acc.avail_balance = credit_bal
+
             await debit_acc.save(pipe)
             await credit_acc.save(pipe)
             await pipe.execute()
 
         return debit_acc, credit_acc, debit_prev_bal, credit_prev_bal
-
     finally:
         await conn.close()

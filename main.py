@@ -1,15 +1,16 @@
-import codecs
+import asyncio
 import logging
 import os
+import sys
 from typing import Optional
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, Response, UploadFile
+from fastapi import FastAPI, HTTPException, Response
 from fastapi_utils.tasks import repeat_every
 
 LOG_FORMAT = "%(asctime)s %(levelname)s: %(message)s"
 LOG_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
-LOG_LEVEL = os.environ.get("LOG_LEVEL", "WARN")
+LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
 logging.basicConfig(level=logging.getLevelName(LOG_LEVEL), format=LOG_FORMAT, datefmt=LOG_DATE_FORMAT)
 
 
@@ -48,27 +49,18 @@ async def new_local_transfer(request: models.FundTransferRequest, response: Resp
         raise HTTPException(status_code=422, detail="validation error for the request")
 
 
-@app.post("/core-banking/_internal/seed/")
-async def seed_account_data(upload_file: UploadFile) -> None:
-    logger.info("seed account data")
-    await ledger.init_from_csv(codecs.iterdecode(upload_file.file, "utf-8"))
-    logger.info("seed account data done")
-
-
 @app.on_event("startup")
 @repeat_every(seconds=2)
 async def flush_event_queue():
-    await eventing.send_events(5000)
+    logger.info(f"flusing {await eventing.send_events(5000)} events")
 
 
 @app.on_event("shutdown")
 async def flush_event_queue_at_shutdown():
-    logger.info("flusing events before shutting down")
-    await eventing.send_events(20000)
-    await eventing.send_events(20000)
+    logger.info(f"flusing {await eventing.send_events(20000)} events before shutting down")
 
 
-if __name__ == "__main__":
+def start_server(port: int = 8000, n_workers: int = 1):
     # override default log format
     log_config = uvicorn.config.LOGGING_CONFIG
     log_config["formatters"]["access"]["fmt"] = LOG_FORMAT
@@ -76,4 +68,13 @@ if __name__ == "__main__":
     log_config["formatters"]["default"]["fmt"] = LOG_FORMAT
     log_config["formatters"]["default"]["datefmt"] = LOG_DATE_FORMAT
 
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, workers=0)
+    uvicorn.run("main:app", host="0.0.0.0", port=port, workers=n_workers)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) >= 3 and sys.argv[1] == "--seed":
+        csv_f = open(sys.argv[2], "r")
+        asyncio.run(ledger.init_from_csv(csv_f))
+        csv_f.close()
+    else:
+        start_server()

@@ -49,7 +49,7 @@ async def dequeue_events(count: int = 10) -> list[FundTransfer]:
     return result
 
 
-async def send_events(count: int):
+async def send_events(count: int) -> int:
     global aws_client, nats_client
 
     events = await dequeue_events(count)
@@ -70,3 +70,5 @@ async def send_events(count: int):
                 await js.publish("transfer.1", json.dumps(evt).encode())
         else:
             logger.info("... NO EVENT_SINK_TYPE configured, skip publishing ...")
+
+    return len(events)

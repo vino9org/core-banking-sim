@@ -1817,20 +1817,6 @@ files = [
 six = ">=1.5"
 
 [[package]]
-name = "python-multipart"
-version = "0.0.5"
-description = "A streaming multipart parser for Python"
-category = "main"
-optional = false
-python-versions = "*"
-files = [
-    {file = "python-multipart-0.0.5.tar.gz", hash = "sha256:f7bb5f611fc600d15fa47b3974c8aa16e93724513b49b5f95c81e6624c83fa43"},
-]
-
-[package.dependencies]
-six = ">=1.4.0"
-
-[[package]]
 name = "python-ulid"
 version = "1.1.0"
 description = "Universally Unique Lexicographically Sortable Identifier"
@@ -2367,4 +2353,4 @@ test = ["pytest (>=6.0.0)", "setuptools (>=65)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11.1"
-content-hash = "e1f8b8d71938f863ca9acd0692b9bea868317e749d447ff9a160545f79af6cc2"
+content-hash = "d7b998ecfacf7703ef56e925f395168d124e88d328bdf91e00b06d13c0c59684"

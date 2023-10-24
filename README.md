@@ -1,5 +1,5 @@
 
-# Welcome to your Python project!
+# Welcome to your Python project
 
 This project is set up Python project with dev tooling pre-configured
 
@@ -25,14 +25,4 @@ $ poetry shell
 ```shell
 # run unit tests
 pytest
-```
-
-## integrate with New Relic
-
-Follow the simple steps below. See [offical Github repo](https://github.com/newrelic/newrelic-lambda-cli#installation) for details.
-
-```shell
-pip3 install newrelic-lambda-cli
-
-newrelic-lambda integrations install --nr-account-id <newrelic_account id> --nr-api-key <newrelic_api key>
 ```
