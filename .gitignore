@@ -37,3 +37,6 @@ newrelic.ini
 
 # data files
 *.csv
+
+# scalene profile results
+profile.*
