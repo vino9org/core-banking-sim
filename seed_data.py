@@ -4,7 +4,6 @@ import sys
 from datetime import datetime
 from typing import List
 
-import httpx
 import redis
 from redis_om.model.encoders import jsonable_encoder
 
@@ -60,17 +59,6 @@ def gen_seed_csv(filename: str, start_n: int, stop_n: int) -> None:
             )
 
 
-def post_seed_data(url: str, filename: str) -> None:
-    with open(filename, "r") as f:
-        response = httpx.post(
-            f"{url}/core-banking/_internal/seed/", files={"content-type": "text/csv", "upload_file": f}  # type: ignore
-        )
-        if response.status_code != 200:
-            print(f"got error posting data. {response.status_code}, {response.text}")
-        else:
-            print("done")
-
-
 def usage():
     print(
         """
@@ -80,7 +68,6 @@ where <command> is
 
    gen   <csv_file> <start> <stop>   generate seed data using id from <start> to <stop> and write output to csv file
    load  <csv_file>                  load seed data from csv file.
-   post  <url> <csv_file>            read seed data csv file and post to API endpoint
    bulk  <start> <stop>              generate seed data in redis binary protocol format using id start to stop and
                                      write output to stdout, which is usable with for bulk loading with redis-cli --pipe
 """
@@ -105,10 +92,6 @@ if __name__ == "__main__":
         start_n, stop_n = int(sys.argv[3]), int(sys.argv[4]) + 1
         with open(sys.argv[3], "w") as f:
             gen_seed_csv(sys.argv[2], start_n, stop_n)
-
-    elif sys.argv[1] == "post" and len(sys.argv) == 4:
-        with open(sys.argv[3], "r") as f:
-            post_seed_data(sys.argv[2], sys.argv[3])
 
     else:
         usage()

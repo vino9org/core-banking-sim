@@ -1,5 +1,5 @@
 from decimal import Decimal
-from io import BytesIO, StringIO
+from io import StringIO
 
 import pytest
 
@@ -99,24 +99,5 @@ async def test_get_account_by_id(client, seed_csv_file) -> None:
 
 
 async def test_get_account_by_invalid_id(client, seed_csv_file) -> None:
-    response = await client.get("/core-banking/accounts/AXX")
-    assert response.status_code == 404
-
-
-async def test_seed_accounts(client, seed_csv_file) -> None:
-    response = await client.post(
-        "/core-banking/_internal/seed/",
-        files={"content-type": "text/csv", "upload_file": BytesIO(_TEST_DATA_.encode("utf-8"))},
-    )
-    assert response.status_code == 200
-
-    response = await client.get("/core-banking/accounts/A11")
-    assert response.status_code == 200
-    assert len(response.json()) > 1
-
-    response = await client.get("/core-banking/accounts/A22")
-    assert response.status_code == 200
-    assert len(response.json()) > 1
-
     response = await client.get("/core-banking/accounts/AXX")
     assert response.status_code == 404
