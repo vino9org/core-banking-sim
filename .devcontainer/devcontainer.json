@@ -31,5 +31,6 @@
     },
     "remoteUser": "vscode",
     "forwardPorts": [],
-    "postCreateCommand": "git config --global --add safe.directory ${containerWorkspaceFolder} && poetry install --no-root &&  pre-commit install "
+    "postCreateCommand": "git config --global --add safe.directory ${containerWorkspaceFolder} && bash ./.devcontainer/post_create.sh",
+    "postStartCommand": "bash ./.devcontainer/post_start.sh"
 }
