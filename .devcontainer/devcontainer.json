@@ -9,9 +9,10 @@
                 "ms-python.debugpy",
                 "ms-python.black-formatter",
                 "ms-python.flake8",
-                "ms-python.isort",
                 "ms-python.mypy-type-checker",
                 "yzhang.markdown-all-in-one"
+                // isort is not installed. can't get it to work
+                // so use pre-commit hook to sort prior to commit
             ]
         }
     },
@@ -19,14 +20,11 @@
         "ghcr.io/devcontainers-contrib/features/poetry:2": {
             "version": "1.7.1"
         },
-        "ghcr.io/devcontainers-contrib/features/isort:2": {
-            "version": "5.12.0"
-        },
         "ghcr.io/devcontainers-contrib/features/pre-commit:2": {
             "version": "3.3.3"
         },
-        "ghcr.io/devcontainers-contrib/features/mypy:2": {
-            "version": "1.4.1"
+        "ghcr.io/devcontainers-contrib/features/isort:2": {
+            "version": "5.12.0"
         }
     },
     "remoteUser": "vscode",

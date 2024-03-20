@@ -1,6 +1,9 @@
 {
     "python.defaultInterpreterPath": ".venv/bin/python",
     "python.testing.pytestEnabled": true,
+    "python.testing.pytestArgs": [
+        "-s"
+    ],
     "python.envFile": "${workspaceFolder}/.env",
     "[python]": {
         "editor.formatOnSave": true,
@@ -16,6 +19,5 @@
     "flake8.ignorePatterns": [
         ".venv/**/*.py"
     ],
-    "mypy-type-checker.preferDaemon": true,
-    "jupyter.debugJustMyCode": false
+    "mypy-type-checker.preferDaemon": true
 }
